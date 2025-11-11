@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Predict - YouTube Sentiment Analyzer{% endblock %}
+
+{% block content %}
+<section class="predict-section">
+    <div class="container">
+        <h1 class="page-title fade-in">Sentiment Prediction</h1>
+        <p class="page-subtitle fade-in">Enter a YouTube video ID to analyze comment sentiment</p>
+        
+        <div class="predict-layout">
+            <div class="predict-main-area">
+                <div class="predict-card fade-in">
+                    <h3>Enter Video ID</h3>
+                    <form method="POST" action="{{ url_for('predict') }}" class="predict-form">
+                        <div class="form-group">
+                            <label for="video_id">YouTube Video ID</label>
+                            <input type="text" id="video_id" name="video_id" required 
+                                   placeholder="e.g., dQw4w9WgXcQ"
+                                   pattern="[a-zA-Z0-9_-]+"
+                                   title="Enter a valid YouTube video ID">
+                            <small>Example: For https://youtube.com/watch?v=dQw4w9WgXcQ, enter "dQw4w9WgXcQ"</small>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-full">Analyze Sentiment</button>
+                    </form>
+                </div>
+                
+                <div class="prediction-output-area">
+                    {% if latest_prediction %}
+                    <div class="result-card fade-in">
+                        <h3>Prediction Result</h3>
+                        <div class="result-content">
+                            <div class="result-video-info">
+                                <span class="result-label">Video ID:</span>
+                                <span class="result-value">{{ latest_prediction.video_id }}</span>
+                            </div>
+                            <div class="sentiment-result">
+                                <span class="result-label">Sentiment:</span>
+                                <div class="sentiment-badge sentiment-badge-{{ latest_prediction.sentiment.lower() }}">
+                                    {{ latest_prediction.sentiment }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="empty-result-placeholder">
+                        <div class="placeholder-icon">📊</div>
+                        <p>Your prediction results will appear here</p>
+                        <small>Enter a YouTube video ID above and click "Analyze Sentiment"</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="chatbot-sidebar">
+                <div class="chatbot-rectangle">
+                    <div class="chatbot-header-rect">
+                        <h4>🤖 Assistant</h4>
+                    </div>
+                    <div class="chatbot-messages-rect" id="chatbotMessagesRect">
+                        <div class="chatbot-message bot">
+                            Hello! I'm here to help you analyze YouTube sentiments. How can I assist you?
+                        </div>
+                    </div>
+                    <div class="chatbot-quick-actions-rect">
+                        <button class="quick-action-btn-rect" data-question="video-id">How to find video ID?</button>
+                        <button class="quick-action-btn-rect" data-question="sentiment">What do sentiments mean?</button>
+                        <button class="quick-action-btn-rect" data-question="accuracy">How accurate is this?</button>
+                        <button class="quick-action-btn-rect" data-question="usage">How to use?</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if recent_predictions %}
+        <div class="recent-predictions fade-in">
+            <h3>Recent Predictions</h3>
+            <div class="predictions-list">
+                {% for prediction in recent_predictions %}
+                <div class="prediction-item">
+                    <span class="prediction-video">📹 {{ prediction.video_id }}</span>
+                    <span class="sentiment-badge sentiment-badge-{{ prediction.sentiment.lower() }}">
+                        {{ prediction.sentiment }}
+                    </span>
+                    <span class="prediction-time">{{ prediction.timestamp }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+{% endblock %}
+{% endblock %}
